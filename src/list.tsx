@@ -2,6 +2,15 @@ import React, { useState } from "react";
 import { Link, generatePath } from "react-router-dom";
 import { Paginator } from "./paginator";
 import { useCompanyMemberList } from "./useCompanyMemberList";
+import Table from "@material-ui/core/Table";
+import TableBody from "@material-ui/core/TableBody";
+import TableCell from "@material-ui/core/TableCell";
+import TableContainer from "@material-ui/core/TableContainer";
+import TableHead from "@material-ui/core/TableHead";
+import TableRow from "@material-ui/core/TableRow";
+import Paper from "@material-ui/core/Paper";
+import Avatar from "@material-ui/core/Avatar";
+import * as classes from "./list.styles";
 
 export const ListPage: React.FC = () => {
   const [company, setCompany] = useState("");
@@ -20,61 +29,64 @@ export const ListPage: React.FC = () => {
   const handleSubmit = (e) => {
     e.preventDefault();
 
-    /* Forma alternativa de obtener la información del formulario */
-    // console.log(new FormData(e.target).get("company"));
     setSearchedCompany(company);
   };
 
   return (
     <>
-      <h2>Hello from List page</h2>
-      <table className="table">
-        <thead>
-          <tr>
-            <th>Avatar</th>
-            <th>Id</th>
-            <th>Name</th>
-          </tr>
-        </thead>
-        <tbody>
-          {members.map((member) => (
-            <tr key={member.id}>
-              <td>
-                <img src={member.avatar_url} style={{ width: "5rem" }} />
-              </td>
-              <td>
-                <span>{member.id}</span>
-              </td>
-              <td>
-                <Link to={generatePath("/detail/:id", { id: member.login })}>
-                  {member.login}
-                </Link>{" "}
-              </td>
-            </tr>
-          ))}
-        </tbody>
-      </table>
+      <div className={classes.listContainer}>
+        <form onSubmit={handleSubmit}>
+          <label>
+            Insert your Company here:
+            <input
+              // name="company"
+              type="text"
+              placeholder="lemoncode"
+              onChange={(e) => {
+                setCompany(e.target.value);
+              }}
+            ></input>
+          </label>
+          <input type="submit" value="Submit" />
+        </form>
 
-      <Paginator
-        totalPages={totalPages}
-        currentPage={currentPage}
-        onPageChanged={onPageChanged}
-      />
+        <div className={classes.tableContainer}>
+          <TableContainer component={Paper}>
+            <Table aria-label="simple table">
+              <TableHead>
+                <TableRow className={classes.headerRow}>
+                  <TableCell align="center">Avatar</TableCell>
+                  <TableCell align="center">Id</TableCell>
+                  <TableCell align="center">Name</TableCell>
+                </TableRow>
+              </TableHead>
+              <TableBody>
+                {members.map((member) => (
+                  <TableRow key={member.id}>
+                    <TableCell align="center">
+                      <Avatar src={member.avatar_url}></Avatar>
+                    </TableCell>
+                    <TableCell align="center">{member.id}</TableCell>
+                    <TableCell align="center">
+                      <Link
+                        to={generatePath("/detail/:id", { id: member.login })}
+                      >
+                        {member.login}
+                      </Link>
+                    </TableCell>
+                  </TableRow>
+                ))}
+              </TableBody>
+            </Table>
+          </TableContainer>
+        </div>
 
-      <form onSubmit={handleSubmit}>
-        <label>
-          Insert your Company here:
-          <input
-            // name="company"
-            type="text"
-            placeholder="lemoncode"
-            onChange={(e) => {
-              setCompany(e.target.value);
-            }}
-          ></input>
-        </label>
-        <input type="submit" value="Submit" />
-      </form>
+        <Paginator
+          totalPages={totalPages}
+          currentPage={currentPage}
+          onPageChanged={onPageChanged}
+        />
+      </div>
     </>
   );
 };

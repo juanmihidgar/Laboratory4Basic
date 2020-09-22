@@ -1,5 +1,6 @@
 import Button from "@material-ui/core/Button/Button";
 import React from "react";
+import * as classes from "./paginator.styles";
 
 interface Props {
   currentPage: number;
@@ -12,27 +13,29 @@ export const Paginator: React.FC<Props> = ({
   currentPage,
   onPageChanged,
 }) => {
-
   const curriedPageChanged = (index: number) => () => {
     return onPageChanged(index);
   };
 
   return (
     <>
-      {Array(totalPages)
-        .fill(0)
-        .map((value, index) => {
-          return (
-            <Button
-              key={index}
-              variant="contained"
-              color={currentPage === index ? "primary" : "default"}
-              onClick={curriedPageChanged(index)}
-            >
-              {index + 1}
-            </Button>
-          );
-        })}
+      <div className={classes.container}>
+        {Array(totalPages)
+          .fill(0)
+          .map((value, index) => {
+            return (
+              <Button
+                className={classes.button}
+                key={index}
+                variant="contained"
+                color={currentPage === index ? "primary" : "default"}
+                onClick={curriedPageChanged(index)}
+              >
+                {index + 1}
+              </Button>
+            );
+          })}
+      </div>
     </>
   );
 };
