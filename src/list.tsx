@@ -1,30 +1,28 @@
-import React from "react";
+import React, { useState } from "react";
 import { Link, generatePath } from "react-router-dom";
-
-interface MemberEntity {
-  id: string;
-  login: string;
-  avatar_url: string;
-}
+import { Paginator } from "./paginator";
+import { useCompanyMemberList } from "./useCompanyMemberList";
 
 export const ListPage: React.FC = () => {
-  const [members, setMembers] = React.useState<MemberEntity[]>([]);
-  const [company, setCompany] = React.useState("");
-  const [companyUpdated, setCompanyUpdated] = React.useState<string>(
-    "lemoncode"
-  );
+  const [company, setCompany] = useState("");
+  const {
+    members,
+    setSearchedCompany,
+    totalPages,
+    currentPage,
+    setCurrentPage,
+  } = useCompanyMemberList("lemoncode", 3);
 
-  React.useEffect(() => {
-    fetch(`https://api.github.com/orgs/${companyUpdated}/members`)
-      .then((response) => response.json())
-      .then((json) => setMembers(json))
-      .catch((e) => console.log(`La empresa ${companyUpdated} no existe`));
-  }, [companyUpdated]);
+  const onPageChanged = (indexPage: number) => {
+    setCurrentPage(indexPage);
+  };
 
-  const companyHandler = (e: React.FormEvent<HTMLFormElement>) => {
+  const handleSubmit = (e) => {
     e.preventDefault();
 
-    setCompanyUpdated(company);
+    /* Forma alternativa de obtener la información del formulario */
+    // console.log(new FormData(e.target).get("company"));
+    setSearchedCompany(company);
   };
 
   return (
@@ -57,11 +55,17 @@ export const ListPage: React.FC = () => {
         </tbody>
       </table>
 
-      <form onSubmit={companyHandler}>
+      <Paginator
+        totalPages={totalPages}
+        currentPage={currentPage}
+        onPageChanged={onPageChanged}
+      />
+
+      <form onSubmit={handleSubmit}>
         <label>
           Insert your Company here:
-          <h5>Empresa</h5>
           <input
+            // name="company"
             type="text"
             placeholder="lemoncode"
             onChange={(e) => {
